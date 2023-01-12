@@ -1,0 +1,92 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+plugins:
+  - serverless-iam-roles-per-function
+
+
+service: franco-test-serverless
+app: franco-test-serverless
+org: francomatt3r
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: us-west-2
+
+functions:
+  processNewFileLambda:
+    handler: handler.processNewFile
+    events:
+      - s3:
+          bucket: franco-test-bucket0
+          event: s3:ObjectCreated:*
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - "s3:GetObject"
+        Resource:
+          - "arn:aws:s3:::franco-test-bucket0/*"
+      - Effect: Allow
+        Action:
+          - "s3:PutObject"
+        Resource:
+          - "arn:aws:s3:::franco-test-bucket2/*"
+          # existing: true
+          # forceDeploy: true
+
+# resources:
+#   Resources:
+#     InputBucket:
+#       Type: AWS::S3::Bucket
+#       Properties:
+#         BucketName: franco-test-bucket0
+#     InputBucketListener:
+#       Type: AWS::SNS::Topic
+#       Properties:
+#         TopicName: franco-test-sns
+#     InputQueue:
+#       Type: AWS::SQS::Queue
+#       Properties:
+#         QueueName: franco-test-sqs
+   
+  # Outputs:
+  #   NewOutput:
+  #     Description: "Description for the output"
+  #     Value: "Some output value"
+
+  # iam:
+  #   role:
+  #     statements:
+  #       - Effect: "Allow"
+  #         Action:
+  #           - "s3:ListBucket"
+  #           - 's3:GetObject'
+  #           - "s3:PutObject"
+  #         Resource: '*'
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+#package:
+#  patterns:
+#    - '!exclude-me.py'
+#    - '!exclude-me-dir/**'
+#    - include-me.py
+#    - include-me-dir/**
